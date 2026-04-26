@@ -1,0 +1,987 @@
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#9333ea">
+<title>Strong50 — 8 Week Program</title>
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlN0cm9uZzUwIiwKICAic2hvcnRfbmFtZSI6ICJTdHJvbmc1MCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzkzMzNlYSIsCiAgImljb25zIjogW10KfQ==">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-light: #334155;
+    --accent: #9333ea;
+    --accent-light: #a855f7;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --success: #10b981;
+    --warn: #f59e0b;
+    --warmup: #06b6d4;
+    --border: #334155;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  header {
+    background: linear-gradient(135deg, #9333ea 0%, #6366f1 100%);
+    padding: 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+  header p { font-size: 0.85rem; opacity: 0.9; margin-top: 2px; }
+  .week-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .week-pill {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .week-pill.active { background: white; color: #9333ea; font-weight: 600; }
+  .week-pill.complete { border-color: #10b981; }
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 16px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+  }
+  .tab.active { background: var(--accent); color: white; }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .card.warmup-card {
+    border-color: var(--warmup);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(30, 41, 59, 1));
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .card-header h2 { font-size: 1.1rem; }
+  .badge {
+    background: var(--accent);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge.warmup { background: var(--warmup); }
+  .exercise {
+    background: var(--card-light);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+  }
+  .exercise.done {
+    opacity: 0.6;
+    background: rgba(16, 185, 129, 0.15);
+    border-left: 3px solid var(--success);
+  }
+  .exercise.warmup-ex.done {
+    background: rgba(6, 182, 212, 0.15);
+    border-left: 3px solid var(--warmup);
+  }
+  .exercise-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .check {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .check.checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  .check.warmup-check.checked {
+    background: var(--warmup);
+    border-color: var(--warmup);
+  }
+  .check.checked::after {
+    content: '✓';
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .exercise-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex: 1;
+  }
+  .exercise-meta {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    margin-left: 34px;
+  }
+  .video-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 34px;
+    margin-top: 4px;
+    padding: 4px 10px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  .video-link:hover {
+    background: rgba(239, 68, 68, 0.25);
+  }
+  .weight-input {
+    margin-left: 34px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .weight-input input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+  .weight-input label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .day-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .day-btn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 14px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .day-btn.active {
+    border-color: var(--accent);
+    background: rgba(147, 51, 234, 0.15);
+  }
+  .day-btn .label { font-size: 0.7rem; color: var(--text-dim); }
+  .day-btn .name { font-weight: 700; font-size: 0.95rem; margin-top: 2px; }
+  .day-btn.complete .name::after {
+    content: ' ✓';
+    color: var(--success);
+  }
+  .progress-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: var(--card);
+    padding: 12px 8px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--accent-light); }
+  .stat-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+  .timer-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.5);
+    z-index: 50;
+  }
+  .timer-modal {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    width: 240px;
+    z-index: 50;
+    border: 1px solid var(--border);
+    display: none;
+  }
+  .timer-modal.show { display: block; }
+  .timer-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 8px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .timer-presets button {
+    background: var(--card-light);
+    border: none;
+    color: var(--text);
+    padding: 8px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .timer-controls {
+    display: flex;
+    gap: 6px;
+  }
+  .timer-controls button {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .timer-controls button.secondary { background: var(--card-light); }
+  .progression-note {
+    background: rgba(147, 51, 234, 0.15);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .finisher {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.2));
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .finisher-title {
+    font-size: 0.75rem;
+    color: var(--warn);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .complete-btn {
+    width: 100%;
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  .complete-btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--card-light); }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 16px;
+    width: 100%;
+  }
+  .install-banner {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  .install-banner strong { color: var(--accent-light); }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-size: 0.8rem; color: var(--text-dim); }
+  details[open] summary { margin-bottom: 6px; }
+  .notes-area {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 6px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    resize: vertical;
+    min-height: 60px;
+  }
+  .warmup-timer {
+    background: var(--warmup);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .warmup-timer:hover { opacity: 0.9; }
+  .section-divider {
+    text-align: center;
+    margin: 20px 0 12px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    position: relative;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-divider::before { left: 0; }
+  .section-divider::after { right: 0; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .pulse { animation: pulse 1s infinite; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💪 Strong50</h1>
+  <p>8-Week Perimenopause Strength Program</p>
+  <div class="week-bar" id="weekBar"></div>
+</header>
+
+<div class="container">
+
+  <div class="install-banner">
+    <strong>📲 Install as App:</strong> In Chrome, tap the menu (⋮) → "Add to Home screen" or "Install app". Your progress saves automatically.
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="workout">Workout</button>
+    <button class="tab" data-tab="progress">Progress</button>
+    <button class="tab" data-tab="guide">Guide</button>
+  </div>
+
+  <!-- WORKOUT TAB -->
+  <div id="tab-workout">
+    <div class="progression-note" id="weekNote"></div>
+
+    <div class="day-selector" id="daySelector"></div>
+
+    <div id="workoutContent"></div>
+
+    <button class="complete-btn" id="completeBtn" disabled="">Complete Workout</button>
+    <button class="reset-btn" id="resetDayBtn">Reset Today's Checkmarks</button>
+  </div>
+
+  <!-- PROGRESS TAB -->
+  <div id="tab-progress" style="display:none;">
+    <div class="progress-summary">
+      <div class="stat">
+        <div class="stat-value" id="statWorkouts">0</div>
+        <div class="stat-label">Workouts Done</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statWeek">1</div>
+        <div class="stat-label">Current Week</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statStreak">0</div>
+        <div class="stat-label">% Complete</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>📏 Body Metrics</h2></div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-dim);">Weight (kg)</label>
+          <input type="number" id="metricWeight" step="0.1" class="notes-area" style="min-height:auto; padding:8px;">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-dim);">Waist (cm)</label>
+          <input type="number" id="metricWaist" step="0.5" class="notes-area" style="min-height:auto; padding:8px;">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-dim);">Body Fat %</label>
+          <input type="number" id="metricBF" step="0.1" class="notes-area" style="min-height:auto; padding:8px;">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-dim);">Hips (cm)</label>
+          <input type="number" id="metricHips" step="0.5" class="notes-area" style="min-height:auto; padding:8px;">
+        </div>
+      </div>
+      <button class="complete-btn" id="saveMetrics" style="background:var(--accent); margin-top:12px;">Save This Week's Metrics</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>📊 History</h2></div>
+      <div id="historyList" style="font-size:0.85rem;"></div>
+    </div>
+
+    <button class="reset-btn" id="resetAllBtn" style="border-color:#ef4444; color:#ef4444;">⚠️ Reset All Progress</button>
+  </div>
+
+  <!-- GUIDE TAB -->
+  <div id="tab-guide" style="display:none;">
+    <div class="card">
+      <h2 style="margin-bottom:10px;">🎯 Goals &amp; Approach</h2>
+      <p style="font-size:0.85rem; line-height:1.6; color:var(--text-dim);">
+        Spot reduction isn't possible — but heavy compound lifting + protein + modest deficit will reduce overall body fat, preferentially from your midsection over time. This program prioritizes muscle preservation, which is critical during perimenopause.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:10px;">🔥 Why Warm Up?</h2>
+      <p style="font-size:0.85rem; line-height:1.6; color:var(--text-dim);">
+        At 50, joints and connective tissue need more prep time. A 5-min dynamic warm-up raises core temperature, lubricates joints, activates dormant glutes, and reduces injury risk by up to 50%. Skip it and you'll feel stiff; do it and your lifts will feel stronger.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:10px;">🥗 Nutrition Priorities</h2>
+      <ul style="font-size:0.85rem; line-height:1.8; color:var(--text-dim); padding-left:20px;">
+        <li><strong style="color:var(--text);">Protein:</strong> 100-130g daily (1.6-2.0g/kg)</li>
+        <li><strong style="color:var(--text);">Deficit:</strong> 300-400 kcal below maintenance</li>
+        <li><strong style="color:var(--text);">Sleep:</strong> 7-8 hrs (cortisol = belly fat)</li>
+        <li><strong style="color:var(--text);">Reduce:</strong> Alcohol &amp; refined carbs</li>
+        <li><strong style="color:var(--text);">Hydrate:</strong> 2.5-3L water (Dubai climate)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:10px;">📅 Weekly Schedule</h2>
+      <div style="font-size:0.85rem; line-height:1.8; color:var(--text-dim);">
+        <div><strong style="color:var(--text);">Mon:</strong> Workout A (Lower)</div>
+        <div><strong style="color:var(--text);">Tue:</strong> Yoga + 45min walk</div>
+        <div><strong style="color:var(--text);">Wed:</strong> Workout B (Upper)</div>
+        <div><strong style="color:var(--text);">Thu:</strong> Yoga or rest</div>
+        <div><strong style="color:var(--text);">Fri:</strong> Workout C (Full)</div>
+        <div><strong style="color:var(--text);">Sat:</strong> Long walk (60min)</div>
+        <div><strong style="color:var(--text);">Sun:</strong> Full rest</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:10px;">📈 Progression Logic</h2>
+      <div style="font-size:0.85rem; line-height:1.7; color:var(--text-dim);">
+        <p><strong style="color:var(--text);">W1-2:</strong> Learn movements, baseline weights</p>
+        <p><strong style="color:var(--text);">W3-4:</strong> +5-10% weight, top of rep range</p>
+        <p><strong style="color:var(--text);">W5-6:</strong> Add a set to main lifts</p>
+        <p><strong style="color:var(--text);">W7-8:</strong> Heaviest weights, drop to 6-8 reps</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<button class="timer-fab" id="timerFab">⏱</button>
+<div class="timer-modal" id="timerModal">
+  <div class="timer-display" id="timerDisplay">01:30</div>
+  <div class="timer-presets">
+    <button data-time="45">45s</button>
+    <button data-time="60">60s</button>
+    <button data-time="90">90s</button>
+  </div>
+  <div class="timer-controls">
+    <button id="timerStart">Start</button>
+    <button id="timerReset" class="secondary">Reset</button>
+  </div>
+</div>
+
+<script>
+// Helper: build a YouTube search URL for any exercise demo
+function videoSearch(query) {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' exercise demo form')}`;
+}
+
+// ======= WARM-UP DATA =======
+const WARMUPS = {
+  A: {
+    title: "Lower Body Warm-Up",
+    duration: "5 min",
+    exercises: [
+      { name: "Light Cardio", detail: "Rower or treadmill, easy pace", time: "60 sec", note: "Get blood flowing — should feel light and chatty", search: "rowing machine warm up easy pace" },
+      { name: "Hip Circles", detail: "10 each direction, each leg", time: "45 sec", note: "Hands on hips, draw big circles with one knee", search: "standing hip circles warm up" },
+      { name: "Cat-Cow", detail: "8-10 slow reps", time: "45 sec", note: "On all fours, arch and round spine", search: "cat cow stretch yoga" },
+      { name: "Glute Bridges", detail: "12 reps, slow", time: "45 sec", note: "Squeeze glutes hard at top — wakes them up for squats", search: "glute bridge activation warm up" },
+      { name: "Bodyweight Squats", detail: "10 reps, deep & slow", time: "45 sec", note: "Sit back, knees track over toes", search: "bodyweight squat proper form" },
+      { name: "Leg Swings", detail: "10 front-back + 10 side, each leg", time: "60 sec", note: "Hold something for balance", search: "leg swings dynamic warm up" }
+    ]
+  },
+  B: {
+    title: "Upper Body Warm-Up",
+    duration: "5 min",
+    exercises: [
+      { name: "Light Cardio", detail: "Rower (great for upper body) or treadmill", time: "60 sec", note: "Easy pace — warm up shoulders & back", search: "rowing machine warm up technique" },
+      { name: "Arm Circles", detail: "15 forward + 15 backward", time: "45 sec", note: "Start small, gradually bigger", search: "arm circles shoulder warm up" },
+      { name: "Shoulder Rolls", detail: "10 forward + 10 backward", time: "30 sec", note: "Big slow circles", search: "shoulder rolls mobility" },
+      { name: "Scapular Wall Slides", detail: "10 reps", time: "60 sec", note: "Back on wall, arms up like goalpost, slide up & down", search: "scapular wall slides" },
+      { name: "Cat-Cow + Thread the Needle", detail: "5 each side", time: "60 sec", note: "Opens thoracic spine for pressing", search: "thread the needle stretch thoracic" },
+      { name: "Band Pull-Aparts", detail: "15 reps (use light band or air rows)", time: "45 sec", note: "Activates upper back before rows/press", search: "band pull aparts shoulder warm up" }
+    ]
+  },
+  C: {
+    title: "Full Body Warm-Up",
+    duration: "5 min",
+    exercises: [
+      { name: "Light Cardio", detail: "Rower preferred — full body", time: "90 sec", note: "Build to a moderate pace", search: "rowing machine warm up full body" },
+      { name: "World's Greatest Stretch", detail: "4 each side", time: "60 sec", note: "Lunge + thoracic rotation — opens hips & spine", search: "worlds greatest stretch" },
+      { name: "Glute Bridges", detail: "12 reps", time: "30 sec", note: "Activates posterior chain for deadlifts", search: "glute bridge activation" },
+      { name: "Bodyweight Squats", detail: "10 reps", time: "30 sec", note: "Full depth, controlled", search: "bodyweight squat warm up" },
+      { name: "Push-up to Down Dog", detail: "8 reps", time: "60 sec", note: "Shoulders, hamstrings, and core in one move", search: "push up to downward dog flow" },
+      { name: "Walking Lunges (no weight)", detail: "10 total", time: "30 sec", note: "Warms up legs for split squats", search: "bodyweight walking lunges form" }
+    ]
+  }
+};
+
+// ======= MAIN PROGRAM DATA =======
+const PROGRAM = {
+  A: {
+    name: "Workout A — Lower",
+    exercises: [
+      { name: "Goblet Squat", base: "4 × 8-10", rest: "90s", note: "Dumbbell at chest, deep squat" },
+      { name: "Romanian Deadlift", base: "4 × 8-10", rest: "90s", note: "Hinge at hips, slight knee bend" },
+      { name: "DB Bench / Machine Press", base: "3 × 10", rest: "60s", note: "Control the descent" },
+      { name: "Sumo Squat", base: "3 × 12", rest: "60s", note: "Wide stance — inner thighs" },
+      { name: "Plank", base: "3 × 30-45s", rest: "45s", note: "Straight line, brace core" }
+    ],
+    finisher: "Rower: 5 × 250m hard / 60s rest"
+  },
+  B: {
+    name: "Workout B — Upper",
+    exercises: [
+      { name: "Single-Arm DB Row", base: "4 × 10/side", rest: "60s", note: "Squeeze shoulder blade" },
+      { name: "DB Shoulder Press", base: "4 × 8-10", rest: "90s", note: "Seated or standing" },
+      { name: "Lat Pulldown", base: "3 × 10-12", rest: "60s", note: "Pull to upper chest" },
+      { name: "Walking Lunges", base: "3 × 10/leg", rest: "60s", note: "DBs at sides" },
+      { name: "Dead Bug", base: "3 × 10/side", rest: "45s", note: "Lower back pressed down" }
+    ],
+    finisher: "Treadmill incline walk: 12% @ 4.5-5 km/h, 10 min"
+  },
+  C: {
+    name: "Workout C — Full Body",
+    exercises: [
+      { name: "DB Deadlift", base: "4 × 8", rest: "90s", note: "Heavy, focus on form" },
+      { name: "Bulgarian Split Squat", base: "3 × 8-10/leg", rest: "75s", note: "Rear foot elevated" },
+      { name: "Push-ups", base: "3 × max-2", rest: "60s", note: "Incline if needed" },
+      { name: "Curtsy Lunge", base: "3 × 10/leg", rest: "60s", note: "Inner thigh emphasis" },
+      { name: "Side Plank", base: "3 × 20-30s/side", rest: "45s", note: "Hips lifted, line straight" }
+    ],
+    finisher: "Rower: 15 min steady, conversational pace"
+  }
+};
+
+const WEEK_NOTES = {
+  1: "🌱 Week 1: Learn movements. Use lighter weights. Focus on form & range of motion.",
+  2: "🌱 Week 2: Same weights as W1 or +2.5kg if form is solid. Lower end of rep range.",
+  3: "🔥 Week 3: +5-10% weight on main lifts. Push toward top of rep range.",
+  4: "🔥 Week 4: Maintain W3 weights. Aim for last 2 reps to feel hard.",
+  5: "💪 Week 5: Add a set to main lifts (5 sets instead of 4). Increase finisher intensity.",
+  6: "💪 Week 6: Heavier than W5 if reps were easy. Push the rower harder.",
+  7: "🚀 Week 7: Heaviest weights yet. Drop to 6-8 reps on Goblet, RDL, Deadlift.",
+  8: "🚀 Week 8: PEAK! Beat W7. Take progress photos & re-measure waist."
+};
+
+// ======= STATE =======
+let state = {
+  currentWeek: 1,
+  currentDay: 'A',
+  weights: {},
+  checks: {},
+  completed: {},
+  metrics: [],
+  notes: {}
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('strong50');
+    if (saved) state = { ...state, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('strong50', JSON.stringify(state)); } catch(e) {}
+}
+
+// ======= RENDER =======
+function renderWeekBar() {
+  const bar = document.getElementById('weekBar');
+  bar.innerHTML = '';
+  for (let w = 1; w <= 8; w++) {
+    const pill = document.createElement('div');
+    pill.className = 'week-pill' + (w === state.currentWeek ? ' active' : '');
+    const wkComplete = ['A','B','C'].every(d => state.completed[`w${w}_d${d}`]);
+    if (wkComplete) pill.classList.add('complete');
+    pill.textContent = `W${w}`;
+    pill.onclick = () => { state.currentWeek = w; saveState(); renderAll(); };
+    bar.appendChild(pill);
+  }
+}
+
+function renderDaySelector() {
+  const sel = document.getElementById('daySelector');
+  sel.innerHTML = '';
+  ['A','B','C'].forEach(d => {
+    const btn = document.createElement('div');
+    btn.className = 'day-btn' + (d === state.currentDay ? ' active' : '');
+    if (state.completed[`w${state.currentWeek}_d${d}`]) btn.classList.add('complete');
+    btn.innerHTML = `<div class="label">Day ${d}</div><div class="name">${PROGRAM[d].name.split('—')[1].trim()}</div>`;
+    btn.onclick = () => { state.currentDay = d; saveState(); renderAll(); };
+    sel.appendChild(btn);
+  });
+}
+
+function renderWorkout() {
+  const day = PROGRAM[state.currentDay];
+  const warmup = WARMUPS[state.currentDay];
+  const content = document.getElementById('workoutContent');
+  document.getElementById('weekNote').textContent = WEEK_NOTES[state.currentWeek];
+  
+  let html = '';
+  
+  // ===== WARM-UP CARD =====
+  html += `<div class="card warmup-card">
+    <div class="card-header">
+      <h2>🔥 ${warmup.title}</h2>
+      <span class="badge warmup">${warmup.duration}</span>
+    </div>
+    <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; line-height:1.5;">
+      💡 Targeted prep for today's lifts. Tap <span style="color:#f87171; font-weight:600;">▶ Watch</span> to see a demo on YouTube.
+    </p>`;
+  
+  warmup.exercises.forEach((ex, i) => {
+    const key = `w${state.currentWeek}_d${state.currentDay}_wu${i}`;
+    const checked = state.checks[key];
+    html += `
+      <div class="exercise warmup-ex ${checked ? 'done' : ''}">
+        <div class="exercise-top">
+          <button class="check warmup-check ${checked ? 'checked' : ''}" data-key="${key}"></button>
+          <div class="exercise-name">${ex.name}</div>
+          <div style="font-size:0.7rem; color:var(--warmup); font-weight:600;">${ex.time}</div>
+        </div>
+        <div class="exercise-meta"><strong style="color:var(--text);">${ex.detail}</strong> · ${ex.note}</div>
+        <a href="${videoSearch(ex.search)}" target="_blank" rel="noopener" class="video-link">▶ Watch demo</a>
+      </div>
+    `;
+  });
+  
+  html += `<button class="warmup-timer" id="startWarmupTimer">▶️ Start 5-Min Warm-Up Timer</button>
+  </div>`;
+  
+  html += `<div class="section-divider">Main Workout</div>`;
+  
+  // ===== MAIN WORKOUT CARD =====
+  html += `<div class="card"><div class="card-header"><h2>${day.name}</h2><span class="badge">Week ${state.currentWeek}</span></div>`;
+  
+  day.exercises.forEach((ex, i) => {
+    const key = `w${state.currentWeek}_d${state.currentDay}_e${i}`;
+    const checked = state.checks[key];
+    const weight = state.weights[key] || '';
+    const lastWeight = state.currentWeek > 1 ? (state.weights[`w${state.currentWeek-1}_d${state.currentDay}_e${i}`] || '') : '';
+    
+    html += `
+      <div class="exercise ${checked ? 'done' : ''}">
+        <div class="exercise-top">
+          <button class="check ${checked ? 'checked' : ''}" data-key="${key}"></button>
+          <div class="exercise-name">${ex.name}</div>
+          <div style="font-size:0.75rem; color:var(--accent-light); font-weight:600;">${ex.base}</div>
+        </div>
+        <div class="exercise-meta">💡 ${ex.note} · Rest ${ex.rest}</div>
+        <a href="${videoSearch(ex.name + ' dumbbell form tutorial')}" target="_blank" rel="noopener" class="video-link" style="margin-bottom:8px;">▶ Watch demo</a>
+        <div class="weight-input">
+          <label>Weight:</label>
+          <input type="text" placeholder="${lastWeight ? 'Last: ' + lastWeight : 'e.g. 12kg'}" value="${weight}" data-weight-key="${key}">
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `<div class="finisher">
+    <div class="finisher-title">🔥 Finisher</div>
+    <div style="font-size:0.85rem;">${day.finisher}</div>
+    <button class="check ${state.checks[`w${state.currentWeek}_d${state.currentDay}_finisher`] ? 'checked' : ''}" data-key="w${state.currentWeek}_d${state.currentDay}_finisher" style="margin-top:8px;"></button>
+  </div>`;
+  
+  html += `<details style="margin-top:12px;">
+    <summary>📝 Session Notes</summary>
+    <textarea class="notes-area" data-note-key="w${state.currentWeek}_d${state.currentDay}" placeholder="How did it feel? Energy level, form cues, etc.">${state.notes[`w${state.currentWeek}_d${state.currentDay}`] || ''}</textarea>
+  </details>`;
+  
+  html += `</div>`;
+  content.innerHTML = html;
+  
+  // Bind checks
+  content.querySelectorAll('.check').forEach(btn => {
+    btn.onclick = () => {
+      const k = btn.dataset.key;
+      state.checks[k] = !state.checks[k];
+      saveState();
+      renderWorkout();
+      updateCompleteBtn();
+    };
+  });
+  // Bind weights
+  content.querySelectorAll('[data-weight-key]').forEach(inp => {
+    inp.oninput = () => {
+      state.weights[inp.dataset.weightKey] = inp.value;
+      saveState();
+    };
+  });
+  // Bind notes
+  content.querySelectorAll('[data-note-key]').forEach(inp => {
+    inp.oninput = () => {
+      state.notes[inp.dataset.noteKey] = inp.value;
+      saveState();
+    };
+  });
+  // Bind warm-up timer
+  const wuBtn = document.getElementById('startWarmupTimer');
+  if (wuBtn) {
+    wuBtn.onclick = () => {
+      timerSec = 300;
+      updateTimerDisplay();
+      timerModal.classList.add('show');
+      if (!timerRunning) document.getElementById('timerStart').click();
+    };
+  }
+  
+  updateCompleteBtn();
+}
+
+function updateCompleteBtn() {
+  const day = PROGRAM[state.currentDay];
+  const allDone = day.exercises.every((_, i) => state.checks[`w${state.currentWeek}_d${state.currentDay}_e${i}`]);
+  const btn = document.getElementById('completeBtn');
+  const isCompleted = state.completed[`w${state.currentWeek}_d${state.currentDay}`];
+  btn.disabled = !allDone && !isCompleted;
+  btn.textContent = isCompleted ? '✓ Workout Completed' : (allDone ? 'Mark Workout Complete' : 'Check off all exercises');
+  if (isCompleted) btn.style.background = 'var(--card-light)';
+  else btn.style.background = '';
+}
+
+function renderProgress() {
+  const total = Object.values(state.completed).filter(v => v).length;
+  document.getElementById('statWorkouts').textContent = total;
+  document.getElementById('statWeek').textContent = state.currentWeek;
+  document.getElementById('statStreak').textContent = Math.round((total / 24) * 100);
+  
+  const list = document.getElementById('historyList');
+  if (state.metrics.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding:12px;">No metrics logged yet</p>';
+  } else {
+    list.innerHTML = state.metrics.slice().reverse().map(m => `
+      <div style="padding:10px; border-bottom:1px solid var(--border);">
+        <strong style="color:var(--accent-light);">Week ${m.week}</strong> 
+        <span style="color:var(--text-dim); font-size:0.75rem;">· ${m.date}</span><br>
+        ${m.weight ? `Weight: ${m.weight}kg · ` : ''}${m.waist ? `Waist: ${m.waist}cm · ` : ''}${m.hips ? `Hips: ${m.hips}cm · ` : ''}${m.bf ? `BF: ${m.bf}%` : ''}
+      </div>
+    `).join('');
+  }
+}
+
+function renderAll() {
+  renderWeekBar();
+  renderDaySelector();
+  renderWorkout();
+  renderProgress();
+}
+
+// ======= EVENTS =======
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    ['workout','progress','guide'].forEach(name => {
+      document.getElementById('tab-'+name).style.display = (name === t.dataset.tab) ? 'block' : 'none';
+    });
+    if (t.dataset.tab === 'progress') renderProgress();
+  };
+});
+
+document.getElementById('completeBtn').onclick = () => {
+  const k = `w${state.currentWeek}_d${state.currentDay}`;
+  state.completed[k] = !state.completed[k];
+  saveState();
+  renderAll();
+};
+
+document.getElementById('resetDayBtn').onclick = () => {
+  if (!confirm('Reset checkmarks for this workout?')) return;
+  const day = PROGRAM[state.currentDay];
+  const warmup = WARMUPS[state.currentDay];
+  day.exercises.forEach((_, i) => {
+    delete state.checks[`w${state.currentWeek}_d${state.currentDay}_e${i}`];
+  });
+  warmup.exercises.forEach((_, i) => {
+    delete state.checks[`w${state.currentWeek}_d${state.currentDay}_wu${i}`];
+  });
+  delete state.checks[`w${state.currentWeek}_d${state.currentDay}_finisher`];
+  delete state.completed[`w${state.currentWeek}_d${state.currentDay}`];
+  saveState();
+  renderAll();
+};
+
+document.getElementById('resetAllBtn').onclick = () => {
+  if (!confirm('This will erase ALL progress. Are you sure?')) return;
+  state = { currentWeek: 1, currentDay: 'A', weights: {}, checks: {}, completed: {}, metrics: [], notes: {} };
+  saveState();
+  renderAll();
+};
+
+document.getElementById('saveMetrics').onclick = () => {
+  const m = {
+    week: state.currentWeek,
+    weight: document.getElementById('metricWeight').value,
+    waist: document.getElementById('metricWaist').value,
+    hips: document.getElementById('metricHips').value,
+    bf: document.getElementById('metricBF').value,
+    date: new Date().toLocaleDateString()
+  };
+  state.metrics.push(m);
+  saveState();
+  ['metricWeight','metricWaist','metricHips','metricBF'].forEach(id => document.getElementById(id).value = '');
+  renderProgress();
+};
+
+// ======= TIMER =======
+let timerSec = 90, timerInterval = null, timerRunning = false;
+const timerDisplay = document.getElementById('timerDisplay');
+const timerModal = document.getElementById('timerModal');
+
+function fmtTime(s) {
+  const m = Math.floor(s/60), sec = s%60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function updateTimerDisplay() { timerDisplay.textContent = fmtTime(timerSec); }
+
+document.getElementById('timerFab').onclick = () => timerModal.classList.toggle('show');
+document.querySelectorAll('.timer-presets button').forEach(b => {
+  b.onclick = () => { timerSec = parseInt(b.dataset.time); updateTimerDisplay(); };
+});
+document.getElementById('timerStart').onclick = () => {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('timerStart').textContent = 'Start';
+  } else {
+    timerRunning = true;
+    document.getElementById('timerStart').textContent = 'Pause';
+    timerInterval = setInterval(() => {
+      timerSec--;
+      updateTimerDisplay();
+      if (timerSec <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('timerStart').textContent = 'Start';
+        timerDisplay.classList.add('pulse');
+        try { 
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const o = ctx.createOscillator(); o.frequency.value = 800;
+          o.connect(ctx.destination); o.start(); 
+          setTimeout(() => { o.stop(); timerDisplay.classList.remove('pulse'); }, 500);
+        } catch(e){}
+        timerSec = 90;
+        setTimeout(updateTimerDisplay, 1500);
+      }
+    }, 1000);
+  }
+};
+document.getElementById('timerReset').onclick = () => {
+  clearInterval(timerInterval); timerRunning = false;
+  document.getElementById('timerStart').textContent = 'Start';
+  timerSec = 90; updateTimerDisplay();
+};
+
+// ======= INIT =======
+loadState();
+renderAll();
+updateTimerDisplay();
+</script>
+
+
+</body></html>
